@@ -39,7 +39,7 @@ class Database:
             self.show_table(filtered_podcasts)
         return filtered_podcasts
 
-    def join_and_select(self, table1, table2, primary_key, columns_table1, columns_table2):
+    def join_and_select(self, table1, table2, primary_key, columns_table1, columns_table2, min_filter=None, max_filter=None):
         # Check if table1 and table2 are strings (table names) or DuckDBPyRelation objects
         if isinstance(table1, str):
             table1 = self.connection.table(table1)
@@ -48,7 +48,15 @@ class Database:
         
         # Perform the select operation on each table
         selected_table1 = table1.project(", ".join(columns_table1))
-        selected_table2 = table2.project(", ".join(columns_table2))
+        
+        if min_filter is None and max_filter is None:
+            selected_table2 = table2.project(", ".join(columns_table2))
+        elif min_filter is not None and max_filter is None:
+            selected_table2 = table2.project(", ".join(columns_table2)).filter(f"average_rating >= {min_filter}")
+        elif min_filter is None and max_filter is not None:
+            selected_table2 = table2.project(", ".join(columns_table2)).filter(f"average_rating <= {max_filter}")
+        else:
+            selected_table2 = table2.project(", ".join(columns_table2)).filter(f"average_rating >= {min_filter} AND average_rating <= {max_filter}")
         
         # Perform the join operation
         joined_table = selected_table1.join(selected_table2, primary_key)

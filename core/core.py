@@ -7,13 +7,15 @@ from model.model import RetrievalModel
 
 class CoreAPP:
     
-    def __init__(self, zip_path, extract_to, db_path, vectors_path, query, top_n, verbose):
+    def __init__(self, zip_path, extract_to, db_path, vectors_path, query, top_n, min_score, max_score, verbose):
         self.zip_path = zip_path
         self.extract_to = extract_to
         self.db_path = db_path
         self.vectors_path = vectors_path
         self.query = query
         self.top_n = top_n
+        self.min_score = min_score
+        self.max_score = max_score
         self.verbose = verbose
         self._extract_zip_file()
     
@@ -27,17 +29,44 @@ class CoreAPP:
         self._set_database()
         self.db.show_all_tables()
         filtered_podcasts = self.db.filter_podcasts()
-        joined_table = self.db.join_and_select(table1="categories",
-                                                table2=filtered_podcasts,
-                                                primary_key="podcast_id",
-                                                columns_table1=["podcast_id", "category"],
-                                                columns_table2=["podcast_id", "slug", "itunes_url", "title", "author", "description", "average_rating", "ratings_count", "scraped_at"],
-                                                )
+        
+        if self.min_score is None and self.max_score is None:
+            joined_table = self.db.join_and_select(table1="categories",
+                                                    table2=filtered_podcasts,
+                                                    primary_key="podcast_id",
+                                                    columns_table1=["podcast_id", "category"],
+                                                    columns_table2=["podcast_id", "slug", "itunes_url", "title", "author", "description", "average_rating", "ratings_count", "scraped_at"]
+                                                    )
+        elif self.min_score is not None and self.max_score is None:
+            joined_table = self.db.join_and_select(table1="categories",
+                                                    table2=filtered_podcasts,
+                                                    primary_key="podcast_id",
+                                                    columns_table1=["podcast_id", "category"],
+                                                    columns_table2=["podcast_id", "slug", "itunes_url", "title", "author", "description", "average_rating", "ratings_count", "scraped_at"],
+                                                    min_filter=self.min_score
+                                                    )
+        elif self.min_score is None and self.max_score is not None:
+            joined_table = self.db.join_and_select(table1="categories",
+                                                    table2=filtered_podcasts,
+                                                    primary_key="podcast_id",
+                                                    columns_table1=["podcast_id", "category"],
+                                                    columns_table2=["podcast_id", "slug", "itunes_url", "title", "author", "description", "average_rating", "ratings_count", "scraped_at"],
+                                                    max_filter=self.max_score
+                                                    )
+        else:
+            joined_table = self.db.join_and_select(table1="categories",
+                                                    table2=filtered_podcasts,
+                                                    primary_key="podcast_id",
+                                                    columns_table1=["podcast_id", "category"],
+                                                    columns_table2=["podcast_id", "slug", "itunes_url", "title", "author", "description", "average_rating", "ratings_count", "scraped_at"],
+                                                    min_filter=self.min_score,
+                                                    max_filter=self.max_score
+                                                    )
+        
         composed_table = self.db.add_composed_column(table=joined_table,
                                                     columns=["category", "slug", "title", "author", "description"],
                                                     new_column_name="full_info"
                                                     )
-        
         self.records = self.db.fetch_column_records(table_name=composed_table,
                                                     columns=["podcast_id", "itunes_url", "full_info"]
                                                     )
