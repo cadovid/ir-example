@@ -64,10 +64,14 @@ class RetrievalModel():
         sim = [(1 - scipy.spatial.distance.cosine(query_embedding, average_vec))]
         return sim
     
-    def rankings(self, query, top_n):
+    def rankings(self, query, top_n, boost_mode):
         query_words = (np.mean(np.array([self._embeddings(x) for x in nltk.word_tokenize(query.lower())], dtype=float), axis=0))
         rank = []
-        for k, v in self.vectors_dict.items():
-            rank.append((k, self._get_similarity(query_words, v)))
+        if not boost_mode:
+            for k, v in self.vectors_dict.items():
+                rank.append((k, self._get_similarity(query_words, v)))
+        else:
+            for k, v in self.vectors_dict.items():
+                rank.append((k, self._get_similarity(query_words, v)))
         rank = sorted(rank, key=lambda t: t[1], reverse=True)
         return rank[:top_n]

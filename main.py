@@ -14,12 +14,14 @@ VECTORS_PATH = os.environ.get("VECTORS_PATH", ensure_directory_exists(f"{os.getc
 DB_PATH = RAW_DATA_PATH + "/database.db"
 QUERY = "I want to listen to a podcast about entertainment industry, focusing on videogames"
 TOP_N = 5
+BOOST_MODE = True
+VERBOSE = True
 
 
 # Main function
-def main(zip_path, extract_to, db_path, vectors_path, query, top_n, min_score, max_score, min_date, max_date, verbose=True):
+def main(zip_path, extract_to, db_path, vectors_path, query, top_n, min_score, max_score, min_date, max_date, boost_mode=BOOST_MODE, verbose=VERBOSE):
     
-    core_app = CoreAPP(zip_path, extract_to, db_path, vectors_path, query, top_n, min_score, max_score, min_date, max_date, verbose)
+    core_app = CoreAPP(zip_path, extract_to, db_path, vectors_path, query, top_n, min_score, max_score, min_date, max_date, boost_mode, verbose)
     core_app.get_records_from_database()
     core_app.transform_records_from_database()
     core_app.create_vectors_dictionary()

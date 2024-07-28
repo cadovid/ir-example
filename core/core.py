@@ -7,7 +7,7 @@ from model.model import RetrievalModel
 
 class CoreAPP:
     
-    def __init__(self, zip_path, extract_to, db_path, vectors_path, query, top_n, min_score, max_score, min_date, max_date, verbose):
+    def __init__(self, zip_path, extract_to, db_path, vectors_path, query, top_n, min_score, max_score, min_date, max_date, boost_mode, verbose):
         self.zip_path = zip_path
         self.extract_to = extract_to
         self.db_path = db_path
@@ -18,6 +18,7 @@ class CoreAPP:
         self.max_score = max_score
         self.min_date = min_date
         self.max_date = max_date
+        self.boost_mode = boost_mode
         self.verbose = verbose
         self._extract_zip_file()
     
@@ -48,7 +49,7 @@ class CoreAPP:
                                                     new_column_name="full_info"
                                                     )
         self.records = self.db.fetch_column_records(table_name=composed_table,
-                                                    columns=["podcast_id", "itunes_url", "full_info"]
+                                                    columns=["podcast_id", "average_rating", "itunes_url", "full_info"]
                                                     )
         self.db.close_connection()
     
@@ -56,11 +57,12 @@ class CoreAPP:
         self.records_dictionary = {}
         for item in self.records:
             self.records_dictionary.update({
-                            str(item[0]): {"itunes_url": item[1],
-                                           "text": item[2]
+                            str(item[0]): {"itunes_url": item[2],
+                                           "average_rating": item[1],
+                                           "text": item[3]
                                           }
                         })
-                   
+    
     def _set_model(self):
         self.rm = RetrievalModel(self.vectors_path)
     
@@ -69,7 +71,7 @@ class CoreAPP:
         self.rm.compute_vectors_dict(self.records_dictionary)
     
     def get_ranking(self):
-        ranks = self.rm.rankings(self.query, top_n=self.top_n)
+        ranks = self.rm.rankings(self.query, top_n=self.top_n, boost_mode=self.boost_mode)
         return self._serialize(ranks)
     
     def _serialize(self, object):
