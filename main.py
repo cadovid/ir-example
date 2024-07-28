@@ -14,12 +14,10 @@ VECTORS_PATH = os.environ.get("VECTORS_PATH", ensure_directory_exists(f"{os.getc
 DB_PATH = RAW_DATA_PATH + "/database.db"
 QUERY = "I want to listen to a podcast about entertainment industry, focusing on videogames"
 TOP_N = 5
-BOOST_MODE = True
-VERBOSE = True
 
 
 # Main function
-def main(zip_path, extract_to, db_path, vectors_path, query, top_n, min_score, max_score, min_date, max_date, boost_mode=BOOST_MODE, verbose=VERBOSE):
+def main(zip_path, extract_to, db_path, vectors_path, query, top_n, min_score, max_score, min_date, max_date, boost_mode, verbose):
     
     core_app = CoreAPP(zip_path, extract_to, db_path, vectors_path, query, top_n, min_score, max_score, min_date, max_date, boost_mode, verbose)
     core_app.get_records_from_database()
@@ -41,6 +39,8 @@ if __name__ == "__main__":
     parser.add_argument('--max_score', type=float, nargs='?', default=None, help='Maximum rating score for the results')
     parser.add_argument('--min_date', type=str, nargs='?', default=None, help='Minimum date for the results')
     parser.add_argument('--max_date', type=str, nargs='?', default=None, help='Maximum date for the results')
+    parser.add_argument('--boost_mode', action="store_true", help='Ranks higher results with a bigger average rating score')
+    parser.add_argument('--verbose', action="store_true", help='Verbosity of the execution')
     
     args = parser.parse_args()
     
@@ -53,6 +53,8 @@ if __name__ == "__main__":
                  args.min_score,
                  args.max_score,
                  args.min_date,
-                 args.max_date
+                 args.max_date,
+                 args.boost_mode,
+                 args.verbose
                  )
     print(ranks)
