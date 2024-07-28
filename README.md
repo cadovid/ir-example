@@ -16,3 +16,5 @@ Requisitos previos:
 - Ojo con la memoria RAM, aqui se requieren 4GB para GoogleNews y otros 2 GB para jugar con el dataset.
 - Descargarse la version de vectores [GoogleNews-vectors-negative300.bin.gz](https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing)
 - El tiempo en procesamiento es un gran handdicap, pero son 160000 textos que pasar a un vector_dict
+- El scrapeo se produjo durante los dias 2019-07-07, 2019-07-08 y 2019-07-09. Mejor seria utilizar fechas de creacion de reviews.
+- Se filtra con --min_score 3 --max_date 2019-07-09

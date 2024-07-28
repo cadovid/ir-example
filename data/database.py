@@ -39,7 +39,7 @@ class Database:
             self.show_table(filtered_podcasts)
         return filtered_podcasts
 
-    def join_and_select(self, table1, table2, primary_key, columns_table1, columns_table2, min_filter=None, max_filter=None):
+    def join_and_select(self, table1, table2, primary_key, columns_table1, columns_table2, min_filter=None, max_filter=None, min_date=None, max_date=None):
         # Check if table1 and table2 are strings (table names) or DuckDBPyRelation objects
         if isinstance(table1, str):
             table1 = self.connection.table(table1)
@@ -49,14 +49,23 @@ class Database:
         # Perform the select operation on each table
         selected_table1 = table1.project(", ".join(columns_table1))
         
-        if min_filter is None and max_filter is None:
-            selected_table2 = table2.project(", ".join(columns_table2))
-        elif min_filter is not None and max_filter is None:
-            selected_table2 = table2.project(", ".join(columns_table2)).filter(f"average_rating >= {min_filter}")
-        elif min_filter is None and max_filter is not None:
-            selected_table2 = table2.project(", ".join(columns_table2)).filter(f"average_rating <= {max_filter}")
+            # Build the filter condition for table2
+        filters = []
+        if min_filter is not None:
+            filters.append(f"average_rating >= {min_filter}")
+        if max_filter is not None:
+            filters.append(f"average_rating <= {max_filter}")
+        if min_date is not None:
+            filters.append(f"scraped_at >= '{min_date}'")
+        if max_date is not None:
+            filters.append(f"scraped_at <= '{max_date}'")
+
+        # Apply the filters to table2
+        if filters:
+            filter_condition = " AND ".join(filters)
+            selected_table2 = table2.project(", ".join(columns_table2)).filter(filter_condition)
         else:
-            selected_table2 = table2.project(", ".join(columns_table2)).filter(f"average_rating >= {min_filter} AND average_rating <= {max_filter}")
+            selected_table2 = table2.project(", ".join(columns_table2))
         
         # Perform the join operation
         joined_table = selected_table1.join(selected_table2, primary_key)
