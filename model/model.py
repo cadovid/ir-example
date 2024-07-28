@@ -55,7 +55,7 @@ class RetrievalModel():
         vectors_dict = {}
         for podcast_id, value in records_dictionary.items():
             average_vector = (np.mean(np.array([self._embeddings(x) for x in self._tokenize_text(value["text"]).split()]), axis=0))
-            output = {value["itunes_url"]: (average_vector)}
+            output = {podcast_id : {"itunes_url": value["itunes_url"], "average_rating": value["average_rating"], "average_vector": (average_vector)}}
             vectors_dict.update(output)
         self.vectors_dict = vectors_dict
         print("Internal vectors dictionary created")
@@ -69,9 +69,9 @@ class RetrievalModel():
         rank = []
         if not boost_mode:
             for k, v in self.vectors_dict.items():
-                rank.append((k, self._get_similarity(query_words, v)))
+                rank.append((v["itunes_url"], self._get_similarity(query_words, v["average_vector"])))
         else:
             for k, v in self.vectors_dict.items():
-                rank.append((k, self._get_similarity(query_words, v)))
+                rank.append((   v["itunes_url"], self._get_similarity(query_words, v["average_vector"])[0] * v["average_rating"] ))
         rank = sorted(rank, key=lambda t: t[1], reverse=True)
         return rank[:top_n]
