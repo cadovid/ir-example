@@ -66,12 +66,12 @@ class RetrievalModel():
     
     def rankings(self, query, top_n, boost_mode):
         query_words = (np.mean(np.array([self._embeddings(x) for x in nltk.word_tokenize(query.lower())], dtype=float), axis=0))
-        rank = []
+        ranks = []
         if not boost_mode:
             for k, v in self.vectors_dict.items():
-                rank.append((v["itunes_url"], self._get_similarity(query_words, v["average_vector"])))
+                ranks.append((v["itunes_url"], self._get_similarity(query_words, v["average_vector"])))
         else:
             for k, v in self.vectors_dict.items():
-                rank.append((   v["itunes_url"], self._get_similarity(query_words, v["average_vector"])[0] * v["average_rating"] ))
-        rank = sorted(rank, key=lambda t: t[1], reverse=True)
-        return rank[:top_n]
+                ranks.append((   v["itunes_url"], self._get_similarity(query_words, v["average_vector"])[0] * v["average_rating"] ))
+        ranks = sorted(ranks, key=lambda t: t[1], reverse=True)
+        return ranks[:top_n]

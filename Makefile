@@ -30,7 +30,7 @@ set-up: venv install-dependencies ## Set up the project
 	@echo "Project set up finished succesfully"
 
 run: ## Run the execution
-	@.venv/bin/python main.py
+	@.venv/bin/python local.py
 
 clean: ## Clean the project
 	@rm -rf .venv

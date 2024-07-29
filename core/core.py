@@ -28,7 +28,7 @@ class CoreAPP:
     def _set_database(self):
         self.db = Database(self.db_path, self.verbose)
     
-    def get_records_from_database(self):
+    def _get_records_from_database(self):
         self._set_database()
         self.db.show_all_tables()
         filtered_podcasts = self.db.filter_podcasts()
@@ -53,7 +53,7 @@ class CoreAPP:
                                                     )
         self.db.close_connection()
     
-    def transform_records_from_database(self):
+    def _transform_records_from_database(self):
         self.records_dictionary = {}
         for item in self.records:
             self.records_dictionary.update({
@@ -66,14 +66,21 @@ class CoreAPP:
     def _set_model(self):
         self.rm = RetrievalModel(self.vectors_path)
     
-    def create_vectors_dictionary(self):
+    def _create_vectors_dictionary(self):
         self._set_model()
         self.rm.compute_vectors_dict(self.records_dictionary)
     
-    def get_ranking(self):
+    def _get_ranking(self):
         ranks = self.rm.rankings(self.query, top_n=self.top_n, boost_mode=self.boost_mode)
         return self._serialize(ranks)
     
     def _serialize(self, object):
         object = json.dumps(object, indent=4)
         return object
+
+    def main_logic(self):
+        self._get_records_from_database()
+        self._transform_records_from_database()
+        self._create_vectors_dictionary()
+        ranks = self._get_ranking()
+        return ranks

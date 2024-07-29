@@ -1,7 +1,9 @@
-import json
 import os
-import argparse
 
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import Optional
+from uuid import uuid4, UUID
 from core.core import CoreAPP
 from utils.common import ensure_directory_exists
 
@@ -16,45 +18,52 @@ QUERY = "I want to listen to a podcast about entertainment industry, focusing on
 TOP_N = 5
 
 
-# Main function
-def main(zip_path, extract_to, db_path, vectors_path, query, top_n, min_score, max_score, min_date, max_date, boost_mode, verbose):
-    
-    core_app = CoreAPP(zip_path, extract_to, db_path, vectors_path, query, top_n, min_score, max_score, min_date, max_date, boost_mode, verbose)
-    core_app.get_records_from_database()
-    core_app.transform_records_from_database()
-    core_app.create_vectors_dictionary()
-    ranks = core_app.get_ranking()
-    
-    return ranks
+app = FastAPI()
 
 
-if __name__ == "__main__":
+class Request(BaseModel):
+    zip_path: str = ZIP_PATH
+    extract_to: str = RAW_DATA_PATH
+    db_path: str = DB_PATH
+    vectors_path: str = VECTORS_PATH
+    query: str = QUERY
+    top_n: int = TOP_N
+    min_score: Optional[float] = None
+    max_score: Optional[float] = None
+    min_date: Optional[str] = None
+    max_date: Optional[str] = None
+    boost_mode: bool = False
+    verbose: bool = False
+
+
+class Prediction(BaseModel):
+    prediction_id: Optional[UUID] = uuid4()
+    top_n_results: int
+    ranks: str
     
-    parser = argparse.ArgumentParser(description="Extract a zip file and insert its contents into an SQLite database.")
-    parser.add_argument('--zip_path', type=str, nargs='?', default=ZIP_PATH, help='Path to the zip file')
-    parser.add_argument('--extract_to', type=str, nargs='?', default=RAW_DATA_PATH, help='Directory to extract the zip file to')
-    parser.add_argument('--query', type=str, nargs='?', default=QUERY, help='Query to perform the retrieval based on')
-    parser.add_argument('--top_n', type=int, nargs='?', default=TOP_N, help='Top n results to show based on similarity score')
-    parser.add_argument('--min_score', type=float, nargs='?', default=None, help='Minimum rating score for the results')
-    parser.add_argument('--max_score', type=float, nargs='?', default=None, help='Maximum rating score for the results')
-    parser.add_argument('--min_date', type=str, nargs='?', default=None, help='Minimum date for the results')
-    parser.add_argument('--max_date', type=str, nargs='?', default=None, help='Maximum date for the results')
-    parser.add_argument('--boost_mode', action="store_true", help='Ranks higher results with a bigger average rating score')
-    parser.add_argument('--verbose', action="store_true", help='Verbosity of the execution')
-    
-    args = parser.parse_args()
-    
-    ranks = main(args.zip_path,
-                 args.extract_to,
-                 DB_PATH,
-                 VECTORS_PATH,
-                 args.query,
-                 args.top_n,
-                 args.min_score,
-                 args.max_score,
-                 args.min_date,
-                 args.max_date,
-                 args.boost_mode,
-                 args.verbose
-                 )
-    print(ranks)
+
+@app.get("/")
+async def read_root():
+    return "Welcome to the IR example implementation"
+
+@app.post("/search/", response_model=Prediction)
+async def search_podcasts(request: Request):
+    core_app = CoreAPP(request.zip_path,
+                       request.extract_to,
+                       request.db_path,
+                       request.vectors_path,
+                       request.query,
+                       request.top_n,
+                       request.min_score,
+                       request.max_score,
+                       request.min_date,
+                       request.max_date,
+                       request.boost_mode,
+                       request.verbose
+                       )
+    ranks = core_app.main_logic()
+    prediction = Prediction(prediction_id=uuid4(),
+                            top_n_results=request.top_n,
+                            ranks=ranks
+                            )
+    return prediction
