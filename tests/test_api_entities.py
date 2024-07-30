@@ -4,8 +4,16 @@ import pytest
 import sys
 
 from pydantic import ValidationError
+
 sys.path.append(os.getcwd())
-from main import Request, Prediction, ZIP_PATH, RAW_DATA_PATH, DB_PATH, VECTORS_PATH
+from main import (
+    Request,
+    Prediction,
+    ZIP_PATH,
+    RAW_DATA_PATH,
+    DB_PATH,
+    VECTORS_PATH,
+)
 from uuid import uuid4
 
 # Dummy data for testing
@@ -21,14 +29,15 @@ dummy_request_data = {
     "min_date": "2019-07-07",
     "max_date": "2019-07-09",
     "boost_mode": True,
-    "verbose": True
+    "verbose": True,
 }
 
 dummy_prediction_data = {
     "prediction_id": uuid4(),
     "top_n_results": 5,
-    "ranks": json.dumps([["result1", 1.0], ["result2", 0.87]])
+    "ranks": json.dumps([["result1", 1.0], ["result2", 0.87]]),
 }
+
 
 def test_request_model_validation():
     # Test successful creation
@@ -70,11 +79,18 @@ def test_request_model_validation():
     with pytest.raises(ValidationError):
         Request(**invalid_request_data)
 
+
 def test_prediction_model_validation():
     # Test successful creation
     prediction_model = Prediction(**dummy_prediction_data)
-    assert prediction_model.prediction_id == dummy_prediction_data["prediction_id"]
-    assert prediction_model.top_n_results == dummy_prediction_data["top_n_results"]
+    assert (
+        prediction_model.prediction_id
+        == dummy_prediction_data["prediction_id"]
+    )
+    assert (
+        prediction_model.top_n_results
+        == dummy_prediction_data["top_n_results"]
+    )
     assert prediction_model.ranks == dummy_prediction_data["ranks"]
 
     # Test validation error
@@ -91,9 +107,11 @@ def test_prediction_model_validation():
     # Test default values
     minimal_prediction_data = {
         "top_n_results": 3,
-        "ranks": json.dumps([["result1"], ["result2"]])
+        "ranks": json.dumps([["result1"], ["result2"]]),
     }
     prediction_model = Prediction(**minimal_prediction_data)
-    assert isinstance(prediction_model.prediction_id, uuid4().__class__)  # Check that it's a UUID instance
+    assert isinstance(
+        prediction_model.prediction_id, uuid4().__class__
+    )  # Check that it's a UUID instance
     assert prediction_model.top_n_results == 3
     assert prediction_model.ranks == json.dumps([["result1"], ["result2"]])

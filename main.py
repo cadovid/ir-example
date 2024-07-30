@@ -9,10 +9,16 @@ from utils.common import ensure_directory_exists
 
 
 # Environment configuration
-DATASET_PATH = os.environ.get("DATASET_PATH", ensure_directory_exists(f"{os.getcwd()}/dataset"))
-RAW_DATA_PATH = os.environ.get("RAW_DATA_PATH", ensure_directory_exists(f"{os.getcwd()}/dataset/raw_data"))
+DATASET_PATH = os.environ.get(
+    "DATASET_PATH", ensure_directory_exists(f"{os.getcwd()}/dataset")
+)
+RAW_DATA_PATH = os.environ.get(
+    "RAW_DATA_PATH", ensure_directory_exists(f"{os.getcwd()}/dataset/raw_data")
+)
 ZIP_PATH = os.environ.get("ZIP_PATH", DATASET_PATH + "/archive.zip")
-VECTORS_PATH = os.environ.get("VECTORS_PATH", ensure_directory_exists(f"{os.getcwd()}/dataset/vectors"))
+VECTORS_PATH = os.environ.get(
+    "VECTORS_PATH", ensure_directory_exists(f"{os.getcwd()}/dataset/vectors")
+)
 DB_PATH = RAW_DATA_PATH + "/database.db"
 QUERY = "I want to listen to a podcast about entertainment industry, focusing on videogames"
 TOP_N = 5
@@ -40,30 +46,31 @@ class Prediction(BaseModel):
     prediction_id: Optional[UUID] = uuid4()
     top_n_results: int
     ranks: str
-    
+
 
 @app.get("/")
 async def read_root():
     return "Welcome to the IR example implementation"
 
+
 @app.post("/search/", response_model=Prediction)
 async def search_podcasts(request: Request):
-    core_app = CoreAPP(request.zip_path,
-                       request.extract_to,
-                       request.db_path,
-                       request.vectors_path,
-                       request.query,
-                       request.top_n,
-                       request.min_score,
-                       request.max_score,
-                       request.min_date,
-                       request.max_date,
-                       request.boost_mode,
-                       request.verbose
-                       )
+    core_app = CoreAPP(
+        request.zip_path,
+        request.extract_to,
+        request.db_path,
+        request.vectors_path,
+        request.query,
+        request.top_n,
+        request.min_score,
+        request.max_score,
+        request.min_date,
+        request.max_date,
+        request.boost_mode,
+        request.verbose,
+    )
     ranks = core_app.main_logic()
-    prediction = Prediction(prediction_id=uuid4(),
-                            top_n_results=request.top_n,
-                            ranks=ranks
-                            )
+    prediction = Prediction(
+        prediction_id=uuid4(), top_n_results=request.top_n, ranks=ranks
+    )
     return prediction

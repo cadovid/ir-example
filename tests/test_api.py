@@ -3,6 +3,7 @@ import pytest
 import sys
 
 from fastapi.testclient import TestClient
+
 sys.path.append(os.getcwd())
 from main import app
 
@@ -16,7 +17,7 @@ dummy_request = {
     "top_n": 5,
     "min_score": 3.0,
     "max_score": 5.0,
-    "boost_mode": True
+    "boost_mode": True,
 }
 
 
@@ -25,10 +26,12 @@ def setup_client():
     with TestClient(app) as client:
         yield client
 
+
 def test_read_root(setup_client):
     response = setup_client.get("/")
     assert response.status_code == 200
     assert response.json() == "Welcome to the IR example implementation"
+
 
 def test_search_podcasts(setup_client):
     response = setup_client.post("/search/", json=dummy_request)
@@ -37,6 +40,7 @@ def test_search_podcasts(setup_client):
     assert "prediction_id" in data
     assert data["top_n_results"] == dummy_request["top_n"]
     assert isinstance(data["ranks"], str)
+
 
 def test_search_podcasts_with_optional_parameters(setup_client):
     modified_request = dummy_request.copy()
@@ -50,6 +54,7 @@ def test_search_podcasts_with_optional_parameters(setup_client):
     assert "prediction_id" in data
     assert data["top_n_results"] == modified_request["top_n"]
     assert isinstance(data["ranks"], str)
+
 
 def test_search_podcasts_with_invalid_data(setup_client):
     invalid_request = dummy_request.copy()

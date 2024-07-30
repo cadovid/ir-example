@@ -3,6 +3,9 @@ SHELL := bash
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
+.ONESHELL:
+ENV_PREFIX=$(shell python -c "if __import__('pathlib').Path('.venv/bin/pip').exists(): print('.venv/bin/')")
+
 # Setting variables
 py = $$(if [ -d $(PWD)/'.venv' ]; then echo $(PWD)/".venv/bin/python3"; else echo "python3"; fi)
 pip = $(py) -m pip
@@ -14,7 +17,7 @@ PWD := $(realpath $(dir $(abspath $(firstword $(MAKEFILE_LIST)))))
 WORKTREE_ROOT := $(shell git rev-parse --show-toplevel 2> /dev/null)
 
 .DEFAULT_GOAL := help
-.PHONY: help venv install-dependencies set-up clean
+.PHONY: help venv install-dependencies set-up run lint clean
 help: ## Display this help section
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z\$$/]+.*:.*?##\s/ {printf "\033[36m%-38s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
@@ -31,6 +34,9 @@ set-up: venv install-dependencies ## Set up the project
 
 run: ## Run the execution
 	@.venv/bin/python local.py
+
+lint: ## Lint the code
+	@$(ENV_PREFIX)black -l 79 .
 
 clean: ## Clean the project
 	@rm -rf .venv
