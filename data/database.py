@@ -1,5 +1,6 @@
-import duckdb
 import struct
+
+import duckdb
 
 
 class Database:
@@ -129,17 +130,13 @@ class Database:
         if isinstance(table_name, str):
             # Get the specified column from the table
             column_records = (
-                self.connection.table(table_name)
-                .project(", ".join(columns))
-                .fetchall()
+                self.connection.table(table_name).project(", ".join(columns)).fetchall()
             )
         elif isinstance(table_name, duckdb.DuckDBPyRelation):
             # Get the specified column from the DuckDBPyRelation
             column_records = table_name.project(", ".join(columns)).fetchall()
         else:
-            raise ValueError(
-                "table_name must be either a string or a DuckDBPyRelation"
-            )
+            raise ValueError("table_name must be either a string or a DuckDBPyRelation")
 
         # Return the list of records
         return column_records

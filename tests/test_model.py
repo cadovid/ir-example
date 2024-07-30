@@ -1,9 +1,9 @@
 import os
-import pytest
 import sys
-
 from unittest.mock import MagicMock, patch
+
 import numpy as np
+import pytest
 
 sys.path.append(os.getcwd())
 from model.model import RetrievalModel
@@ -31,9 +31,7 @@ def retrieval_model():
             "in",
             "and",
         ]
-        mock_nltk.word_tokenize = MagicMock(
-            side_effect=lambda text: text.split()
-        )
+        mock_nltk.word_tokenize = MagicMock(side_effect=lambda text: text.split())
 
         # Mocking scipy distance
         mock_scipy.spatial.distance.cosine = MagicMock(return_value=0.1)

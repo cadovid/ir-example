@@ -1,10 +1,12 @@
 import os
-import pytest
-import duckdb
 import sys
 
+import duckdb
+import pytest
+
 sys.path.append(os.getcwd())
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 from data.database import Database
 
 
@@ -100,9 +102,7 @@ def test_join_and_select(db):
     )
 
     # Assert join call
-    mock_selected_table1.join.assert_called_with(
-        mock_filtered_table2, "podcast_id"
-    )
+    mock_selected_table1.join.assert_called_with(mock_filtered_table2, "podcast_id")
 
 
 def test_add_composed_column(db):

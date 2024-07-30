@@ -1,20 +1,14 @@
 import json
 import os
-import pytest
 import sys
 
+import pytest
 from pydantic import ValidationError
 
 sys.path.append(os.getcwd())
-from main import (
-    Request,
-    Prediction,
-    ZIP_PATH,
-    RAW_DATA_PATH,
-    DB_PATH,
-    VECTORS_PATH,
-)
 from uuid import uuid4
+
+from main import DB_PATH, RAW_DATA_PATH, VECTORS_PATH, ZIP_PATH, Prediction, Request
 
 # Dummy data for testing
 dummy_request_data = {
@@ -83,14 +77,8 @@ def test_request_model_validation():
 def test_prediction_model_validation():
     # Test successful creation
     prediction_model = Prediction(**dummy_prediction_data)
-    assert (
-        prediction_model.prediction_id
-        == dummy_prediction_data["prediction_id"]
-    )
-    assert (
-        prediction_model.top_n_results
-        == dummy_prediction_data["top_n_results"]
-    )
+    assert prediction_model.prediction_id == dummy_prediction_data["prediction_id"]
+    assert prediction_model.top_n_results == dummy_prediction_data["top_n_results"]
     assert prediction_model.ranks == dummy_prediction_data["ranks"]
 
     # Test validation error

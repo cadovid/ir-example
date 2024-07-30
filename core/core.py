@@ -1,8 +1,8 @@
 import json
 
-from utils.common import extract_zip
 from data.database import Database
 from model.model import RetrievalModel
+from utils.common import extract_zip
 
 
 class CoreAPP:

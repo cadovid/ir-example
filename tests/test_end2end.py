@@ -1,19 +1,12 @@
 import json
 import os
-import pytest
 import sys
+
+import pytest
 from fastapi.testclient import TestClient
 
 sys.path.append(os.getcwd())
-from main import (
-    app,
-    ZIP_PATH,
-    RAW_DATA_PATH,
-    DB_PATH,
-    VECTORS_PATH,
-    QUERY,
-    TOP_N,
-)
+from main import DB_PATH, QUERY, RAW_DATA_PATH, TOP_N, VECTORS_PATH, ZIP_PATH, app
 
 
 @pytest.fixture(scope="module")

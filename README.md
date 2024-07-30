@@ -20,3 +20,4 @@ Requisitos previos:
 - Se filtra con --min_score 3 --max_date 2019-07-09
 - Añadidos test unitarios donde se mockean integraciones.
 - Añadido test end2end donde se testea la funcionalidad, integracion y respuesta. No se pueden comprobar resultados exactos puesto que la naturaleza del algoritmo Retrieval no es deterministica. Si se cambia para serlo, se podrían probar dichas respuestas.
+- Si quieres probarlo localmente, utilizando el comando "make" directamente en la CLI se muestran todas las opciones de ejecucion. Son automaticas.

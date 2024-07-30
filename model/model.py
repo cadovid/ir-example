@@ -1,7 +1,8 @@
+import re
+
 import gensim
 import nltk
 import numpy as np
-import re
 import scipy
 
 
@@ -9,9 +10,7 @@ class RetrievalModel:
 
     def __init__(self, vectors_path):
         self.model = None
-        self.vectors_path = (
-            vectors_path + "/GoogleNews-vectors-negative300.bin.gz"
-        )
+        self.vectors_path = vectors_path + "/GoogleNews-vectors-negative300.bin.gz"
         nltk.download("stopwords")
         nltk.download("punkt")
 
@@ -41,9 +40,7 @@ class RetrievalModel:
         flattened_list = re.sub(pattern, "", " ".join(flattened_list))
         tokens = [token.strip() for token in flattened_list.split()]
         filtered = [
-            token
-            for token in tokens
-            if token.lower() not in self.stopword_list
+            token for token in tokens if token.lower() not in self.stopword_list
         ]
         filtered = " ".join(filtered)
         return filtered
@@ -83,18 +80,13 @@ class RetrievalModel:
         print("Internal vectors dictionary created")
 
     def _get_similarity(self, query_embedding, average_vec):
-        sim = [
-            (1 - scipy.spatial.distance.cosine(query_embedding, average_vec))
-        ]
+        sim = [(1 - scipy.spatial.distance.cosine(query_embedding, average_vec))]
         return sim
 
     def rankings(self, query, top_n, boost_mode):
         query_words = np.mean(
             np.array(
-                [
-                    self._embeddings(x)
-                    for x in nltk.word_tokenize(query.lower())
-                ],
+                [self._embeddings(x) for x in nltk.word_tokenize(query.lower())],
                 dtype=float,
             ),
             axis=0,
@@ -113,9 +105,7 @@ class RetrievalModel:
                 ranks.append(
                     (
                         v["itunes_url"],
-                        self._get_similarity(query_words, v["average_vector"])[
-                            0
-                        ]
+                        self._get_similarity(query_words, v["average_vector"])[0]
                         * v["average_rating"],
                     )
                 )

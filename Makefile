@@ -17,7 +17,7 @@ PWD := $(realpath $(dir $(abspath $(firstword $(MAKEFILE_LIST)))))
 WORKTREE_ROOT := $(shell git rev-parse --show-toplevel 2> /dev/null)
 
 .DEFAULT_GOAL := help
-.PHONY: help venv install-dependencies set-up run lint clean
+.PHONY: help venv install-dependencies set-up run lint isort test clean
 help: ## Display this help section
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z\$$/]+.*:.*?##\s/ {printf "\033[36m%-38s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
@@ -32,11 +32,17 @@ install-dependencies: requirements.txt ## Install all dependencies in the venv
 set-up: venv install-dependencies ## Set up the project
 	@echo "Project set up finished succesfully"
 
-run: ## Run the execution
+run: ## Run the execution locally
 	@.venv/bin/python local.py
 
 lint: ## Lint the code
-	@$(ENV_PREFIX)black -l 79 .
+	@$(ENV_PREFIX)black .
+
+isort: ## Reorder imports
+	@$(ENV_PREFIX)isort .
+
+test: ## Test the code
+	@$(ENV_PREFIX)pytest --cov=. --cov-report=term 
 
 clean: ## Clean the project
 	@rm -rf .venv

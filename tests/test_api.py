@@ -1,12 +1,11 @@
 import os
-import pytest
 import sys
 
+import pytest
 from fastapi.testclient import TestClient
 
 sys.path.append(os.getcwd())
 from main import app
-
 
 client = TestClient(app)
 

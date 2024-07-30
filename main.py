@@ -1,12 +1,12 @@
 import os
+from typing import Optional
+from uuid import UUID, uuid4
 
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import Optional
-from uuid import uuid4, UUID
+
 from core.core import CoreAPP
 from utils.common import ensure_directory_exists
-
 
 # Environment configuration
 DATASET_PATH = os.environ.get(
@@ -20,7 +20,9 @@ VECTORS_PATH = os.environ.get(
     "VECTORS_PATH", ensure_directory_exists(f"{os.getcwd()}/dataset/vectors")
 )
 DB_PATH = RAW_DATA_PATH + "/database.db"
-QUERY = "I want to listen to a podcast about entertainment industry, focusing on videogames"
+QUERY = (
+    "I want to listen to a podcast about entertainment industry, focusing on videogames"
+)
 TOP_N = 5
 
 

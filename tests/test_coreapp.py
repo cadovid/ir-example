@@ -1,11 +1,12 @@
-import os
-import pytest
 import json
+import os
 import sys
+
+import pytest
 
 sys.path.append(os.getcwd())
 from core.core import CoreAPP
-from main import ZIP_PATH, RAW_DATA_PATH, DB_PATH, VECTORS_PATH
+from main import DB_PATH, RAW_DATA_PATH, VECTORS_PATH, ZIP_PATH
 
 
 @pytest.fixture
@@ -41,9 +42,7 @@ def core_app():
 def test_extract_zip_file(mocker, core_app):
     mock_extract_zip = mocker.patch("core.core.extract_zip")
     core_app._extract_zip_file()
-    mock_extract_zip.assert_called_once_with(
-        core_app.zip_path, core_app.extract_to
-    )
+    mock_extract_zip.assert_called_once_with(core_app.zip_path, core_app.extract_to)
 
 
 def test_set_database(mocker, core_app):
