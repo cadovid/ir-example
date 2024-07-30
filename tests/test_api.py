@@ -4,7 +4,7 @@ import sys
 
 from fastapi.testclient import TestClient
 sys.path.append(os.getcwd())
-from main import app, Request, Prediction
+from main import app
 
 
 client = TestClient(app)
