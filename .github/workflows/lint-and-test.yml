@@ -62,6 +62,31 @@ jobs:
           pip install -U pip setuptools wheel
           pip install -r requirements.txt
 
+      - name: Create directories for data
+        run: |
+          mkdir -p dataset/vectors
+          mkdir -p dataset/raw_data
+
+      - name: Download GoogleNews vectors
+        run: wget https://figshare.com/ndownloader/files/41403483 -O ./dataset/vectors/GoogleNews-vectors-negative300.bin
+
+      - name: Install Kaggle CLI
+        run: |
+          . .venv/bin/activate
+          pip install kaggle
+
+      - name: Setup Kaggle credentials
+        run: echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME }}\",\"key\":\"${{ secrets.KAGGLE_KEY }}\"}" > ~/.kaggle/kaggle.json
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+
+      - name: Download podcast reviews dataset
+        run: kaggle datasets download -d thoughtvector/podcastreviews -p ./dataset/
+
+      - name: Unzip podcast reviews dataset
+        run: unzip ./dataset/podcastreviews.zip -d ./dataset/raw_data/
+
       - name: Run tests with pytest
         run: |
           . .venv/bin/activate
