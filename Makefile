@@ -17,7 +17,7 @@ PWD := $(realpath $(dir $(abspath $(firstword $(MAKEFILE_LIST)))))
 WORKTREE_ROOT := $(shell git rev-parse --show-toplevel 2> /dev/null)
 
 .DEFAULT_GOAL := help
-.PHONY: help venv install-dependencies set-up run-locally lint isort test build run clean
+.PHONY: help venv install-dependencies set-up run-locally lint isort test package build run clean
 help: ## Display this help section
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z\$$/]+.*:.*?##\s/ {printf "\033[36m%-38s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
@@ -46,6 +46,9 @@ isort: ## Reorder imports
 
 test: ## Test the code
 	@$(ENV_PREFIX)pytest --cov=. --cov-report=term 
+
+package:
+	@.venv/bin/python -m build
 
 build: ## Build the docker image
 	docker build -t example-ir .

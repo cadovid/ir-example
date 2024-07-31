@@ -57,5 +57,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./dist/example_ir-1.0.0-py3-none-any.whl
-          asset_name: my_project-$(date +%Y%m%d%H%M%S).whl
+          asset_name: ir-example-v1.0.0.whl
           asset_content_type: application/zip

@@ -110,6 +110,10 @@ Then, you only need to make a request through, for example, the same `curl` exam
 
 Just run the tests: `make test`. This will trigger both unitary and integration (end2end) tests.
 
+### Can I install it as a library?
+
+Of course, a release is already distributed on the Releases URL of the repository. But, if you want to create your own distribution, you will only need to execute `make package`. This will generate the installable `.whl` file.
+
 ### What about the workflows?
 
 - There are implemented a couple of workflows for CI/CD purposes using Github actions. On each push to the dev branch, a CI step is performed in which we perform lint operations and also the testing part. We check for everything to be ok. Also, on each push or PR to the main branch, not only the CI step is completed but also a CD process in which we package the module and distribute it as a realease.
