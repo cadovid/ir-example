@@ -21,3 +21,33 @@ Requisitos previos:
 - Añadidos test unitarios donde se mockean integraciones.
 - Añadido test end2end donde se testea la funcionalidad, integracion y respuesta. No se pueden comprobar resultados exactos puesto que la naturaleza del algoritmo Retrieval no es deterministica. Si se cambia para serlo, se podrían probar dichas respuestas.
 - Si quieres probarlo localmente, utilizando el comando "make" directamente en la CLI se muestran todas las opciones de ejecucion. Son automaticas.
+- Metodos async solo para endpoint.
+
+## Consideraciones del código actual
+
+- Tanto la librería como la api están metidas juntas. En un proyecto serio se separarían, pero aquí he querido meter todo en el mismo repo.
+- Ejemplo de llamada local:
+```
+curl -X 'POST' \
+  'http://127.0.0.1:8000/search/' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "query": "I want to listen to a podcast about entertainment industry, focusing on videogames", 
+  "top_n": 5,
+  "min_score": 3.0,
+  "max_score": 5.0,
+  "min_date": "2019-07-07", 
+  "max_date": "2019-07-09",
+  "boost_mode": true,
+  "verbose": false
+}'
+```
+
+## TODOs
+
+- La logica de procesamiento es lenta. Lo mas lento es volver a cargar los ficheros (esto se puede tener precargado para inferencias y mejorar el tiempo de respuesta). Lo mismo con los diccionarios generados para el modelo. En este ejemplo básico no he entrado en esta parte de optimización.
+- Metricas y logs de rendimiento del sistema. A futuro hay que añadir metricas de utilizacion y rendimiento del endpoint.
+- tener gestión de excepciones y mappear las excepciones de tu servicio, repositorios en el controller a errores HTTP.
+- añadir un prometheus + grafana + opentelemetry para ver los métricas y logs.
+- autenticación, seguridad de usuarios.
