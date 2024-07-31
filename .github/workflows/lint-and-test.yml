@@ -1,0 +1,104 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  lint:
+    name: Lint and isort
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          pip install -U pip setuptools wheel
+          pip install -r requirements.txt
+
+      - name: Run black (linter)
+        run: |
+          . .venv/bin/activate
+          make lint
+
+      - name: Run isort
+        run: |
+          . .venv/bin/activate
+          make isort
+
+  test:
+    name: Run tests with pytest
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          pip install -U pip setuptools wheel
+          pip install -r requirements.txt
+
+      - name: Create directories for data
+        run: |
+          mkdir -p dataset/vectors
+          mkdir -p dataset/raw_data
+
+      - name: Install Kaggle CLI
+        run: |
+          . .venv/bin/activate
+          pip install kaggle
+
+      - name: Setup Kaggle credentials
+        run: |
+            mkdir ~/.kaggle
+            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME }}\",\"key\":\"${{ secrets.KAGGLE_KEY }}\"}" > ~/.kaggle/kaggle.json
+            chmod 600 ~/.kaggle/kaggle.json
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+
+      - name: Download podcast reviews dataset
+        run: |
+            . .venv/bin/activate
+            kaggle datasets download -d thoughtvector/podcastreviews -p ./dataset/
+            downloaded_file=$(find ./dataset -name '*.zip')
+            echo "Dataset downloaded to: $(readlink -f "$downloaded_file")"
+
+      - name: Unzip podcast reviews dataset
+        run: |
+            unzip ./dataset/podcastreviews.zip '*.db' -d ./dataset/raw_data/
+            unzipped_file=$(find ./dataset -name '*.db')
+            echo "Unzipped file to: $(readlink -f "$unzipped_file")"
+      
+      - name: Download GoogleNews vectors
+        run: |
+            wget https://figshare.com/ndownloader/files/41403483 -O ./dataset/vectors/GoogleNews-vectors-negative300.bin.gz
+            downloaded_vectors=$(find ./dataset -name '*.bin.gz')
+            echo "Unzipped file to: $(readlink -f "$downloaded_vectors")"
+
+      - name: Run tests with pytest
+        run: |
+          . .venv/bin/activate
+          make test
