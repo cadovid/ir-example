@@ -55,3 +55,5 @@ curl -X 'POST' \
 - añadir un prometheus + grafana + opentelemetry para ver los métricas y logs.
 - autenticación, seguridad de usuarios.
 - En los workflows de github actions se podría extender para montar también la imagen y subirla a un registry privado, desde donde desplegar el servidor. Fase de deployment.
+- El sistema de loggings es básico imprimiendo por pantalla la información. Se podría almacenar todo el logueo en un fichero o, mejor aún, en una plataforma externa como Grafana.
+- Adicion de validacion por typing.

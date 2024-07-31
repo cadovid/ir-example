@@ -5,6 +5,8 @@ import nltk
 import numpy as np
 import scipy
 
+from utils.common import LOGGER
+
 
 class RetrievalModel:
 
@@ -16,13 +18,13 @@ class RetrievalModel:
 
     def _create_stopwords(self):
         self.stopword_list = nltk.corpus.stopwords.words("english")
-        print("Stopwords created")
+        LOGGER.info("English list of stopwords created")
 
     def _load_vectors(self):
         self.model = gensim.models.KeyedVectors.load_word2vec_format(
             self.vectors_path, binary=True, limit=500000
         )
-        print("Vectors loaded")
+        LOGGER.info(f"Vectors loaded from {self.vectors_path}")
 
     def _data_clean(self, text):
         for index, word in enumerate(text):
@@ -77,7 +79,9 @@ class RetrievalModel:
             }
             vectors_dict.update(output)
         self.vectors_dict = vectors_dict
-        print("Internal vectors dictionary created")
+        LOGGER.info(
+            f"Internal vectors dictionary created with a total len of {len(self.vectors_dict)}"
+        )
 
     def _get_similarity(self, query_embedding, average_vec):
         sim = [(1 - scipy.spatial.distance.cosine(query_embedding, average_vec))]

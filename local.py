@@ -2,7 +2,7 @@ import argparse
 import os
 
 from core.core import CoreAPP
-from utils.common import ensure_directory_exists
+from utils.common import LOGGER, ensure_directory_exists
 
 # Environment configuration
 DATASET_PATH = os.environ.get(
@@ -109,4 +109,4 @@ if __name__ == "__main__":
         args.verbose,
     )
     ranks = core_app.main_logic()
-    print(ranks)
+    LOGGER.info(ranks)

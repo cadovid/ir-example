@@ -14,7 +14,9 @@ from data.database import Database
 def db():
     with patch("duckdb.connect") as mock_connect:
         mock_connect.return_value = MagicMock()
-        db_instance = Database(db_path=os.path.join(os.path.dirname(__file__), "test.db"), verbose=True)
+        db_instance = Database(
+            db_path=os.path.join(os.path.dirname(__file__), "test.db"), verbose=True
+        )
         yield db_instance
         db_instance.close_connection()
 

@@ -2,6 +2,8 @@ import struct
 
 import duckdb
 
+from utils.common import LOGGER
+
 
 class Database:
 
@@ -18,7 +20,7 @@ class Database:
         pattern = struct.Struct("<8x4sQ")
 
         with open(self.db_path, "rb") as fh:
-            print(
+            LOGGER.info(
                 f"Database Storage version: {pattern.unpack(fh.read(pattern.size))[1]}"
             )
 
