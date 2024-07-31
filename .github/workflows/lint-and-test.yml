@@ -67,9 +67,6 @@ jobs:
           mkdir -p dataset/vectors
           mkdir -p dataset/raw_data
 
-      - name: Download GoogleNews vectors
-        run: wget https://figshare.com/ndownloader/files/41403483 -O ./dataset/vectors/GoogleNews-vectors-negative300.bin
-
       - name: Install Kaggle CLI
         run: |
           . .venv/bin/activate
@@ -85,10 +82,15 @@ jobs:
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
 
       - name: Download podcast reviews dataset
-        run: kaggle datasets download -d thoughtvector/podcastreviews -p ./dataset/
+        run: |
+            . .venv/bin/activate
+            kaggle datasets download -d thoughtvector/podcastreviews -p ./dataset/
 
       - name: Unzip podcast reviews dataset
         run: unzip ./dataset/podcastreviews.zip -d ./dataset/raw_data/
+      
+      - name: Download GoogleNews vectors
+        run: wget https://figshare.com/ndownloader/files/41403483 -O ./dataset/vectors/GoogleNews-vectors-negative300.bin
 
       - name: Run tests with pytest
         run: |
