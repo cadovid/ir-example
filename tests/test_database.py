@@ -14,13 +14,13 @@ from data.database import Database
 def db():
     with patch("duckdb.connect") as mock_connect:
         mock_connect.return_value = MagicMock()
-        db_instance = Database(db_path="test.db", verbose=True)
+        db_instance = Database(db_path=os.path.join(os.path.dirname(__file__), "test.db"), verbose=True)
         yield db_instance
         db_instance.close_connection()
 
 
 def test_init(db):
-    assert db.db_path == "test.db"
+    assert db.db_path == os.path.join(os.path.dirname(__file__), "test.db")
     assert db.verbose is True
     db.connection.close.assert_not_called()  # Ensure close isn't called on init
 

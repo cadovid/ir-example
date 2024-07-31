@@ -7,7 +7,7 @@ Requisitos previos:
 - Tener python instalado en el sistema.
 - Tener python-venv instalado en el sistema.
 - Usar un sistema que admita make command.
-- Se trabaja con el dataset tal cual se descarga de Kaggle: archive.zip guardado en una carpeta dataset/ por defecto (esta ruta se puede dar como argumento de entrada).
+- Se trabaja con el dataset tal cual se descarga de Kaggle: podcastreviews.zip guardado en una carpeta dataset/ por defecto (esta ruta se puede dar como argumento de entrada).
 - Se explora el dataset directamente con duckdb porque: es pequeño <10 GB y estamos suponiendo una maquina grande de un solo core, no procesamiento en paralelo ni por batches.
 - Utilizamos una conexión de forma persistente al fichero que contiene la database. Esto es debido a que así podemos utilizar la función de duckdb que permite Larger-than-memory workloads are supported by spilling to disk to a tmp file.
 - Old database storage version, upgrade it is essential.
@@ -43,6 +43,9 @@ curl -X 'POST' \
   "verbose": false
 }'
 ```
+- ¿Cómo funciona el workflow? Requiere de conexión con kaggle para bajarse el dataset automáticamente. Para no compartir secretos, en caso de hacer un fork del repo, habría que añadir las variables KAGGLE_USERNAME y KAGGLE_KEY como secrets en tu repositorio forkeado para que funcione. Estas se sacan de generar una API KEY en Kaggle.
+- El workflow ejecuta las fases de ci del proyecto, ejecutando el test end2end para comprobar que todo funcione correctamente antes de cualquier subida al repo.
+
 
 ## TODOs
 
@@ -51,4 +54,4 @@ curl -X 'POST' \
 - tener gestión de excepciones y mappear las excepciones de tu servicio, repositorios en el controller a errores HTTP.
 - añadir un prometheus + grafana + opentelemetry para ver los métricas y logs.
 - autenticación, seguridad de usuarios.
-- En github actions se podría extender para montar también la iamgen y subirla a un registry privado, desde donde desplegar el servidor.
+- En los workflows de github actions se podría extender para montar también la imagen y subirla a un registry privado, desde donde desplegar el servidor. Fase de deployment.

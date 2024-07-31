@@ -85,12 +85,20 @@ jobs:
         run: |
             . .venv/bin/activate
             kaggle datasets download -d thoughtvector/podcastreviews -p ./dataset/
+            downloaded_file=$(find ./dataset -name '*.zip')
+            echo "Dataset downloaded to: $(readlink -f "$downloaded_file")"
 
       - name: Unzip podcast reviews dataset
-        run: unzip ./dataset/podcastreviews.zip -d ./dataset/raw_data/
+        run: |
+            unzip ./dataset/podcastreviews.zip '*.db' -d ./dataset/raw_data/
+            unzipped_file=$(find ./dataset -name '*.db')
+            echo "Unzipped file to: $(readlink -f "$unzipped_file")"
       
       - name: Download GoogleNews vectors
-        run: wget https://figshare.com/ndownloader/files/41403483 -O ./dataset/vectors/GoogleNews-vectors-negative300.bin
+        run: |
+            wget https://figshare.com/ndownloader/files/41403483 -O ./dataset/vectors/GoogleNews-vectors-negative300.bin.gz
+            downloaded_vectors=$(find ./dataset -name '*.bin.gz')
+            echo "Unzipped file to: $(readlink -f "$downloaded_vectors")"
 
       - name: Run tests with pytest
         run: |

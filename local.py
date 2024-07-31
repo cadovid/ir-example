@@ -11,7 +11,7 @@ DATASET_PATH = os.environ.get(
 RAW_DATA_PATH = os.environ.get(
     "RAW_DATA_PATH", ensure_directory_exists(f"{os.getcwd()}/dataset/raw_data")
 )
-ZIP_PATH = os.environ.get("ZIP_PATH", DATASET_PATH + "/archive.zip")
+ZIP_PATH = os.environ.get("ZIP_PATH", DATASET_PATH + "/podcastreviews.zip")
 VECTORS_PATH = os.environ.get(
     "VECTORS_PATH", ensure_directory_exists(f"{os.getcwd()}/dataset/vectors")
 )
