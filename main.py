@@ -30,6 +30,24 @@ app = FastAPI()
 
 
 class Request(BaseModel):
+    """
+    Request body schema for the /search/ endpoint.
+
+    Attributes:
+        zip_path (str): Path to the zip file. Defaults to ZIP_PATH.
+        extract_to (str): Directory to extract the zip file to. Defaults to RAW_DATA_PATH.
+        db_path (str): Path to the SQLite database file. Defaults to DB_PATH.
+        vectors_path (str): Path to the vectors file. Defaults to VECTORS_PATH.
+        query (str): Query for performing the search. Defaults to QUERY.
+        top_n (int): Number of top results to return. Defaults to TOP_N.
+        min_score (Optional[float]): Minimum score for filtering results. Defaults to None.
+        max_score (Optional[float]): Maximum score for filtering results. Defaults to None.
+        min_date (Optional[str]): Minimum date for filtering results. Defaults to None.
+        max_date (Optional[str]): Maximum date for filtering results. Defaults to None.
+        boost_mode (bool): Whether to use boost mode or not. Defaults to False.
+        verbose (bool): Whether to enable verbose output. Defaults to False.
+    """
+
     zip_path: str = ZIP_PATH
     extract_to: str = RAW_DATA_PATH
     db_path: str = DB_PATH
@@ -45,6 +63,15 @@ class Request(BaseModel):
 
 
 class Prediction(BaseModel):
+    """
+    Response body schema for the /search/ endpoint.
+
+    Attributes:
+        prediction_id (Optional[UUID]): Unique identifier for the prediction. Defaults to a new UUID.
+        top_n_results (int): Number of top results returned.
+        ranks (str): JSON string containing the ranked results.
+    """
+
     prediction_id: Optional[UUID] = uuid4()
     top_n_results: int
     ranks: str
@@ -52,11 +79,26 @@ class Prediction(BaseModel):
 
 @app.get("/")
 async def read_root():
+    """
+    Root endpoint for the application.
+
+    Returns:
+        str: A welcome message indicating that the IR example implementation is running.
+    """
     return "Welcome to the IR example implementation"
 
 
 @app.post("/search/", response_model=Prediction)
 async def search_podcasts(request: Request):
+    """
+    Endpoint for searching podcasts based on the provided request parameters.
+
+    Args:
+        request (Request): Request body containing search parameters.
+
+    Returns:
+        Prediction: A Prediction object containing the prediction ID, number of top results, and ranked results.
+    """
     core_app = CoreAPP(
         request.zip_path,
         request.extract_to,

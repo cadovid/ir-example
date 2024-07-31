@@ -23,6 +23,24 @@ TOP_N = 5
 
 
 if __name__ == "__main__":
+    """
+    Main entry point for the script.
+
+    This script sets up the command-line interface (CLI) for processing a zip file containing podcast reviews,
+    extracting its contents, and performing queries on the data. The results are then logged.
+
+    Command-line arguments:
+    --zip_path: Path to the zip file (default: ZIP_PATH)
+    --extract_to: Directory to extract the zip file to (default: RAW_DATA_PATH)
+    --query: Query to perform the retrieval based on (default: QUERY)
+    --top_n: Top n results to show based on similarity score (default: TOP_N)
+    --min_score: Minimum rating score for the results (default: None)
+    --max_score: Maximum rating score for the results (default: None)
+    --min_date: Minimum date for the results (default: None)
+    --max_date: Maximum date for the results (default: None)
+    --boost_mode: Ranks higher results with a bigger average rating score (default: False)
+    --verbose: Verbosity of the execution (default: False)
+    """
 
     parser = argparse.ArgumentParser(
         description="Extract a zip file and insert its contents into an SQLite database."

@@ -41,6 +41,15 @@ LOGGER = configure_logger()
 
 # Function to check a directory
 def ensure_directory_exists(directory_path):
+    """
+    Checks if a directory exists, and creates it if it does not.
+
+    Args:
+        directory_path (str): The path of the directory to check/create.
+
+    Returns:
+        str: The path of the directory.
+    """
     if not os.path.exists(directory_path):
         os.makedirs(directory_path)
         LOGGER.info(f"Directory {directory_path} created.")
@@ -51,6 +60,16 @@ def ensure_directory_exists(directory_path):
 
 # Function to extract a zip file
 def extract_zip(zip_path, extract_to):
+    """
+    Extracts the contents of a zip file to the specified directory.
+
+    Args:
+        zip_path (str): The path to the zip file to extract.
+        extract_to (str): The directory where the contents should be extracted.
+
+    Returns:
+        None
+    """
     if os.path.isfile(extract_to + "/database.db"):
         LOGGER.info("Database .db file already present. Do not extract it.")
     else:
