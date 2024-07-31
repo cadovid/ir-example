@@ -51,3 +51,4 @@ curl -X 'POST' \
 - tener gestión de excepciones y mappear las excepciones de tu servicio, repositorios en el controller a errores HTTP.
 - añadir un prometheus + grafana + opentelemetry para ver los métricas y logs.
 - autenticación, seguridad de usuarios.
+- En github actions se podría extender para montar también la iamgen y subirla a un registry privado, desde donde desplegar el servidor.
